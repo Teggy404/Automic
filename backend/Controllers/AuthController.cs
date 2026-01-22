@@ -1,12 +1,12 @@
 using backend.Data;
 using backend.Services;
 using Microsoft.AspNetCore.Mvc;
-using backend.Data;
 using backend.Dtos;
 using backend.Models;
-using backend.Services;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace backend.Controllers;
 
@@ -25,6 +25,30 @@ public class AuthController : ControllerBase
         _tokens = tokens;
     }
 
+    [Authorize]
+    [HttpGet("me")]
+    public async Task<ActionResult<AuthRequest.AuthUser>> getUser()
+    {
+        var sub = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrWhiteSpace(sub))
+            return Unauthorized("Missing user id claim");
+
+        if (!Guid.TryParse(sub, out var publicId))
+            return Unauthorized("Invalid sub claim");
+
+        var AuthUser = await _db.Users
+            .Where(u => u.PublicId == publicId)
+            .Select(u => new AuthRequest.AuthUser(u.UserName ?? "UserName"))
+            .SingleOrDefaultAsync();
+
+        if (AuthUser is null)
+            return Unauthorized("User no longer exists");
+
+        return Ok(AuthUser);
+
+    }
+
     [HttpPost("register")]
     public async Task<ActionResult<AuthRequest.AuthResponse>> Register(RegisterRequest req)
     {
@@ -35,6 +59,7 @@ public class AuthController : ControllerBase
 
         var user = new User
         {
+            PublicId = Guid.NewGuid(),
             Email = email,
             PasswordHash = _passwords.Hash(req.Password)
         };
@@ -45,17 +70,17 @@ public class AuthController : ControllerBase
         var token = _tokens.CreateToken(user);
         return Ok(new AuthRequest.AuthResponse(token));
     }
-    
+
     [HttpPost("login")]
     public async Task<ActionResult<AuthRequest.AuthResponse>> Login(LoginRequest req)
     {
         var email = req.Email.Trim().ToLower();
-        
+
         var user = await _db.Users.SingleOrDefaultAsync(u => u.Email == email);
-        if(user is null) return Unauthorized("Invalid credentials");
+        if (user is null) return Unauthorized("Invalid credentials");
 
         var ok = _passwords.Verify(user.PasswordHash, req.Password);
-        if(!ok) return Unauthorized("Invalid Credentials");
+        if (!ok) return Unauthorized("Invalid Credentials");
 
         var token = _tokens.CreateToken(user);
         return Ok(new AuthRequest.AuthResponse(token));
