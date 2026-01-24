@@ -121,3 +121,14 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes iconWobble {
+  0% {transform: rotate(0deg); }
+  100% {transform: rotate(360deg); }
+}
+
+.bg-icon {
+  animation-name: iconWobble;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite; 
+}
