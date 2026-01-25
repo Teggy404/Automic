@@ -132,3 +132,9 @@
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite; 
 }
+
+.glow-spin {
+  animation-name: iconWobble;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}

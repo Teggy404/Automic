@@ -3,7 +3,7 @@ import { Car } from "lucide-react";
 
 const Navbar = () => {
   return (
-    <div className="relative border flex items-center bg-gray-100 p-5 drop-shadow-lg">
+    <div className="relative border flex items-center bg-gray-100 p-5 drop-shadow-lg z-4">
       <div>
         <Car size={50} />
       </div>

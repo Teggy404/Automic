@@ -2,19 +2,20 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectL
 
 type HomeSelectProps = {
     name: string;
+    value: string | null;
+    onChange: (value:string) => void
 }
 
 const HomeSelect = ( props:HomeSelectProps) => {
     return (
-        <Select>
-            <SelectTrigger className="
-              w-full 
-              bg-gray-200 
-              mt-5 
-              hover:cursor-pointer 
-              font-bold 
-              data-placeholder:bg-primary
-              data-placeholder:text-white ">
+        <Select 
+          value={props.value ?? ""}
+          onValueChange={props.onChange}
+        >
+            <SelectTrigger className={`          
+              w-full mt-5 hover:cursor-pointer font-bold
+              ${props.value !== null ? "text-black bg-gray-200" : "text-white bg-primary"}
+            `}>
               <SelectValue placeholder={`Select ${props.name}`} />
             </SelectTrigger>
               <SelectContent>
