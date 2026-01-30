@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BackGroundIcons from "../components/home/BackGroundIcons";
 import VehicleForm from "../components/home/VehicleForm";
 

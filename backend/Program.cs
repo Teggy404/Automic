@@ -22,6 +22,8 @@ builder.Services.AddSingleton<PasswordService>();
 
 builder.Services.AddScoped<TokenService>();
 
+builder.Services.AddScoped<VehicleDataService>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("FrontEndDev", policy =>
@@ -32,6 +34,7 @@ builder.Services.AddCors(options =>
         .AllowAnyMethod();
     });
 });
+
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -52,6 +55,12 @@ builder.Services
     });
 
 builder.Services.AddAuthorization();
+
+builder.Services.AddHttpClient("vpic", client =>
+{
+    client.BaseAddress = new Uri("https://vpic.nhtsa.dot.gov/api/vehicles/");
+    client.Timeout = TimeSpan.FromSeconds(10);
+});
 
 var app = builder.Build();
 
