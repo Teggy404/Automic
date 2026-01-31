@@ -1,3 +1,4 @@
+using Backend.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Services;
@@ -10,14 +11,18 @@ public class VehicleDataService
         _httpClientFactory = httpClientFactory;
     }
 
-    public async Task<string> GetAllMakesRawJson(CancellationToken ct)
+    public async Task<List<VehicleDataRequest.Make>> GetAllMakesRawJson(CancellationToken ct)
     {
         var client = _httpClientFactory.CreateClient("vpic");
 
-        using var response = await client.GetAsync("GetAllMakes?format=json", ct);
+        var vpic = 
+            await client.GetFromJsonAsync<VehicleDataRequest.VpicMakes<VehicleDataRequest.VpicMakesEntry>>(
+                "GetAllMakes?format=json",
+                ct
+            );
 
-        response.EnsureSuccessStatusCode();
+        if(vpic is null) return [];
 
-        return await response.Content.ReadAsStringAsync(ct);
+        return vpic.Results.Select(m => new VehicleDataRequest.Make(m.Make_ID, m.Make_Name)).OrderBy(m => m.Name).ToList();
     }
 }

@@ -1,4 +1,5 @@
 using backend.Services;
+using Backend.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,9 +17,9 @@ public  class VehicleController: ControllerBase
     }
 
     [HttpGet("makes")]
-    public async Task<ActionResult> GetMakes(CancellationToken ct)
+    public async Task<ActionResult<List<VehicleDataRequest.Make>>> GetMakes(CancellationToken ct)
     {
-        var json = await _vehicleDataService.GetAllMakesRawJson(ct);
-        return Content(json, "application/json");
+        var makes = await _vehicleDataService.GetAllMakesRawJson(ct);
+        return Ok(makes);
     }
 }
