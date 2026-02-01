@@ -21,4 +21,11 @@ public  class VehicleController: ControllerBase
         var makes = await _vehicleDataService.GetAllMakesRawJson(ct);
         return Ok(makes);
     }
+
+    [HttpGet("models/{makeId}")]
+    public async Task<ActionResult<List<VehicleDataRequest.Model>>> GetModels(CancellationToken ct, string makeId)
+    {
+        var models = await _vehicleDataService.GetAllModelsRawJson(ct, makeId);
+        return Ok(models);
+    }
 }

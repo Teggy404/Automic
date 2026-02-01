@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import HomeSelect from "./HomeSelect";
 import { Button } from "../ui/button";
-import type { Makes, Make } from "../../types/vpic";
+import type { Makes, Make, Model } from "../../types/vpic";
 import { getMakes } from "../../api/vpic";
 
 type VehicleFormProps = {
@@ -9,6 +9,7 @@ type VehicleFormProps = {
 }
 const VehicleForm = ({setIconGlow}:VehicleFormProps) => {
     const [makes, setMakes] = useState<Make[] | undefined> ();
+    const [models, setModels] = useState<Model[] | undefined> ();
     const [make, setMake] = useState<string | null>(null);
     const [model, setModel] = useState<string | null>(null);
     const [year, setYear] = useState<string | null>(null);
@@ -35,15 +36,18 @@ const VehicleForm = ({setIconGlow}:VehicleFormProps) => {
             setYear(null);
             setIconGlow(0);
           }}/>
-          {/* {make && <HomeSelect 
+          {make && <HomeSelect<Model> 
           name={"Model"} 
-          value={model} 
+          value={model}
+          data={models}
+          getKey={(m) => String(m.id)}
+          getName={(m) => m.name} 
           onChange={(v) => {
             setModel(v);
             setYear(null);
             setIconGlow(1);
           }}/> }
-          {model && <HomeSelect name={"Year"} value={year} onChange={(v) => {
+          {/* {model && <HomeSelect name={"Year"} value={year} onChange={(v) => {
             setYear(v);
             setIconGlow(2);
           }}/>}
