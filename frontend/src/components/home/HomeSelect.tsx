@@ -12,9 +12,9 @@ import { useState } from "react";
 
 type HomeSelectProps<T> = {
     name: string;
-    value: string | null;
+    value: string | undefined;
     data: T[] | undefined;
-    onChange: (value:string) => void
+    onChange: (value:T) => void
     getKey: (item: T) => string;
     getName: (item: T) => string;
 }
@@ -30,7 +30,7 @@ const HomeSelect = <T,>( props:HomeSelectProps<T>) => {
 
     return (
       <div className="pt-5">
-        <Button onClick={() => setOpen(true)} type="button" variant={props.value ? "secondary":"default"} className={`w-full `}>
+        <Button onClick={() => setOpen(true)} type="button" variant={props.value ? "secondary":"default"} className={"w-full hover:cursor-pointer"}>
           {props.value ?? `Select ${props.name}`}
         </Button>
         <CommandDialog open={open} onOpenChange={setOpen}>
@@ -44,7 +44,7 @@ const HomeSelect = <T,>( props:HomeSelectProps<T>) => {
                   <CommandItem 
                     key={props.getKey(item)} 
                     onSelect={() => {
-                      props.onChange(props.getName(item));
+                      props.onChange(item);
                       setOpen(false);
                     }}>
                       {props.getName(item)}

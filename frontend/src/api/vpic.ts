@@ -6,5 +6,5 @@ export function getMakes(): Promise<Makes> {
 }
 
 export function getModels(makeId:number): Promise<Models>{
-    return apiFetch<Models>(`/vehicles/models/${makeId}`, {method: "GET"});
+    return apiFetch<Models>(`/vehicle/models/${makeId}`, {method: "GET"});
 }
