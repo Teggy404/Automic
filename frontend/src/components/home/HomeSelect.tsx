@@ -1,34 +1,62 @@
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectLabel, SelectItem} from "../ui/select";
+import { Button } from "../ui/button"
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "../ui/command"
+import { useState } from "react";
 
-type HomeSelectProps = {
+type HomeSelectProps<T> = {
     name: string;
     value: string | null;
+    data: T[] | undefined;
     onChange: (value:string) => void
+    getKey: (item: T) => string;
+    getName: (item: T) => string;
 }
 
-const HomeSelect = ( props:HomeSelectProps) => {
+const HomeSelect = <T,>( props:HomeSelectProps<T>) => {
+    const [open, setOpen] = useState(false);
+    const [query, setQuery] = useState("");
+
+    const filtered = (props.data ?? []).filter((item) => {
+      return props.getName(item).toLowerCase().includes(query.toLowerCase());
+    })
+    .slice(0, 50);
+
     return (
-        <Select 
-          value={props.value ?? ""}
-          onValueChange={props.onChange}
-        >
-            <SelectTrigger className={`          
-              w-full mt-5 hover:cursor-pointer font-bold
-              ${props.value !== null ? "text-black bg-gray-200" : "text-white bg-primary"}
-            `}>
-              <SelectValue placeholder={`Select ${props.name}`} />
-            </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Make</SelectLabel>
-                  <SelectItem value="apple">Apple</SelectItem>
-                  <SelectItem value="banana">Banana</SelectItem>
-                  <SelectItem value="blueberry">Blueberry</SelectItem>
-                  <SelectItem value="grapes">Grapes</SelectItem>
-                  <SelectItem value="pineapple">Pineapple</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-          </Select> );
+      <div className="pt-5">
+        <Button onClick={() => setOpen(true)} type="button" variant={props.value ? "secondary":"default"} className={`w-full `}>
+          {props.value ?? `Select ${props.name}`}
+        </Button>
+        <CommandDialog open={open} onOpenChange={setOpen}>
+          <Command>
+            <CommandInput placeholder={`Search ${props.name}...`}  value={query} onValueChange={setQuery}/>
+            <CommandList>
+              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandGroup heading="Suggestions">
+                {filtered.map((item) => {
+                  return (
+                  <CommandItem 
+                    key={props.getKey(item)} 
+                    onSelect={() => {
+                      props.onChange(props.getName(item));
+                      setOpen(false);
+                    }}>
+                      {props.getName(item)}
+                  </CommandItem>
+                  );
+                })} 
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </CommandDialog>
+      </div>
+      );
 }
  
 export default HomeSelect;
