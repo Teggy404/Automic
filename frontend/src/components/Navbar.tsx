@@ -1,6 +1,7 @@
 import { Button } from "./ui/button";
 import { Car } from "lucide-react";
-import { SignIn } from "./SignIn";
+import  SignIn  from "./SignIn";
+import Register from "./Register";
 
 const Navbar = () => {
   return (
@@ -13,9 +14,7 @@ const Navbar = () => {
       </div>
       <div className="ml-auto flex gap-4">
         <SignIn />
-        <Button className="hover:cursor-pointer">
-          <span className="font-bold">Register</span>
-        </Button>
+        <Register />
       </div>
     </div>
   );
