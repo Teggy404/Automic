@@ -11,3 +11,17 @@ export type AuthState = {
   bootstrapped: boolean;
   bootstrap: () => Promise<void>;
 };
+
+export type AuthToken = {
+  Token: string
+}
+
+export type RegisterRequest = {
+  Email: string,
+  Password: string
+}
+
+export type LoginRequest = {
+  Email: string,
+  Password: string,
+}
