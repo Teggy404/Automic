@@ -1,23 +1,27 @@
 import { apiFetch } from "./client";
-import type {AuthResponse, LoginRequest, RegisterRequest, User } from "../types/auth";
+import type {
+  AuthResponse,
+  LoginRequest,
+  RegisterRequest,
+  User,
+} from "../types/auth";
 
 export function getMe(): Promise<User> {
-  return apiFetch<User>("/auth/me", { method: "GET" });
+  return apiFetch<User>("/auth/me", { method: "GET", credentials: "include" });
 }
 
 export function register(payload: RegisterRequest): Promise<AuthResponse> {
-  return apiFetch<AuthResponse>("/auth/register", 
-    { 
-      method: "POST", 
-      body: JSON.stringify(payload)
-    });
+  return apiFetch<AuthResponse>("/auth/register", {
+    method: "POST",
+    body: JSON.stringify(payload),
+    credentials: "include",
+  });
 }
 
 export function login(payload: LoginRequest): Promise<AuthResponse> {
-  return apiFetch<AuthResponse>("/auth/login",
-    {
-      method: "POST",
-      body: JSON.stringify(payload)
-    }
-  )
+  return apiFetch<AuthResponse>("/auth/login", {
+    method: "POST",
+    body: JSON.stringify(payload),
+    credentials: "include",
+  });
 }
