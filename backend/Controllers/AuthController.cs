@@ -50,7 +50,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<string>> Register(RegisterRequest req)
+    public async Task<ActionResult<AuthRequest.AuthResponse>> Register(RegisterRequest req)
     {
         var email = req.Email.Trim().ToLower();
 
@@ -76,11 +76,11 @@ public class AuthController : ControllerBase
             {
                 HttpOnly = true,
                 SameSite = SameSiteMode.Lax,
-                Expires = DateTimeOffset.UtcNow.AddMinutes(15)
+                Expires = DateTimeOffset.UtcNow.AddHours(1)
             }
         );
 
-        return Ok(new {message = "registered"});
+        return Ok(new AuthRequest.AuthResponse("Successfully registered"));
     }
 
     [HttpPost("login")]
@@ -95,6 +95,17 @@ public class AuthController : ControllerBase
         if (!ok) return Unauthorized("Invalid Credentials");
 
         var token = _tokens.CreateToken(user);
-        return Ok(new AuthRequest.AuthResponse(token));
+
+        Response.Cookies.Append(
+            "access_token",
+            token,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTime.UtcNow.AddHours(1)
+            }
+        );
+        return Ok(new AuthRequest.AuthResponse("Login successful"));
     }
 }

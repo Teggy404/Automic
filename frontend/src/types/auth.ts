@@ -12,8 +12,8 @@ export type AuthState = {
   bootstrap: () => Promise<void>;
 };
 
-export type AuthToken = {
-  Token: string
+export type AuthResponse = {
+  Message: string
 }
 
 export type RegisterRequest = {
