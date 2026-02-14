@@ -74,7 +74,7 @@ const SignIn = () => {
               </Field>
             </FieldGroup>
 
-            <Button className="h-11 w-full font-bold">
+            <Button className="h-11 w-full font-bold hover:cursor-pointer">
               Sign In
             </Button>
           </form>
@@ -82,17 +82,10 @@ const SignIn = () => {
         <div className="border-t bg-muted/40 px-8 py-5">
           <div className="flex items-center justify-between">
             <p className="text-sm opacity-80">New here?</p>
-            <Button type="button" variant="link" className="px-0 font-bold">
+            <Button type="button" variant="link" className="px-0 font-bold hover:cursor-pointer">
               Create an account
             </Button>
           </div>
-          <DialogFooter className="mt-4">
-            <DialogClose asChild>
-              <Button type="button" variant="ghost" className="w-full bg-secondary">
-                Cancel
-              </Button>
-            </DialogClose>
-          </DialogFooter>
         </div>
       </DialogContent>
     </Dialog>
