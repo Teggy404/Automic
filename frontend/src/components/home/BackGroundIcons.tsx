@@ -4,18 +4,18 @@ import type { LucideProps } from "lucide-react";
 import type { RefAttributes } from "react";
 
 type iconBackgroundProps = {
-    iconGlow: number;
+  iconGlow: number;
 }
 type IconSpec = {
-    Icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>
-    top: string;
-    left: string;
-    sizePx: number;
-    delaySec: number;
+  Icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>
+  top: string;
+  left: string;
+  sizePx: number;
+  delaySec: number;
 }
 
 const randomInt = (min: number, max: number) => {
-    return Math.floor(Math.random() * (max - min + 1) + min);
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 const icons: IconSpec[] = [
@@ -96,26 +96,26 @@ const icons: IconSpec[] = [
 ]
 
 const BackGroundIcons = ({iconGlow}: iconBackgroundProps) => {
-    return ( 
-        <div className="absolute inset-0 overflow-hidden pointer-events-none z-1">
-            {icons.map(({ Icon, top, left, sizePx, delaySec }, i) => (
-                <Icon
-                    key={i}
-                    className={`
-                        absolute text-slate-950
-                        transition-opacity duration-700 ease-in-out 
-                        ${i%3 <= iconGlow ? "opacity-50 glow-spin" : "opacity-10 bg-icon"}`}
-                    style={{
-                        top,
-                        left,
-                        width: sizePx,
-                        height: sizePx,
-                        animationDuration: `${i%3 <= iconGlow ? 1 : randomInt(3, 5)}s`,
-                    }}
-                />
-            ))}
-        </div>
-     );
+  return ( 
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-1">
+      {icons.map(({ Icon, top, left, sizePx, delaySec }, i) => (
+        <Icon
+          key={i}
+          className={`
+              absolute text-slate-950
+              transition-opacity duration-700 ease-in-out 
+              ${i%3 <= iconGlow ? "opacity-50 glow-spin" : "opacity-10 bg-icon"}`}
+          style={{
+              top,
+              left,
+              width: sizePx,
+              height: sizePx,
+              animationDuration: `${i%3 <= iconGlow ? 1 : randomInt(3, 5)}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
 }
  
 export default BackGroundIcons;
