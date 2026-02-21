@@ -7,6 +7,7 @@ public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {}
     public DbSet<User> Users => Set<User>();
+    public DbSet<Car> Cars => Set<Car>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>()
