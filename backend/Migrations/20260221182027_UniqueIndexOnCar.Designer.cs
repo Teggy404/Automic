@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using backend.Data;
@@ -11,9 +12,11 @@ using backend.Data;
 namespace backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260221182027_UniqueIndexOnCar")]
+    partial class UniqueIndexOnCar
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,11 +27,11 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.Car", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
                     b.Property<string>("Make")
                         .IsRequired()
@@ -45,48 +48,12 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("id");
 
                     b.HasIndex("Make", "Model", "Year")
                         .IsUnique();
 
                     b.ToTable("Cars");
-                });
-
-            modelBuilder.Entity("backend.Models.Tsb", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CarId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Component")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("NhtsaId")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("PublicId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Summary")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("TsbId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CarId");
-
-                    b.ToTable("Tsbs");
                 });
 
             modelBuilder.Entity("backend.Models.User", b =>
@@ -117,22 +84,6 @@ namespace backend.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("backend.Models.Tsb", b =>
-                {
-                    b.HasOne("backend.Models.Car", "Car")
-                        .WithMany("Tsbs")
-                        .HasForeignKey("CarId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Car");
-                });
-
-            modelBuilder.Entity("backend.Models.Car", b =>
-                {
-                    b.Navigation("Tsbs");
                 });
 #pragma warning restore 612, 618
         }
