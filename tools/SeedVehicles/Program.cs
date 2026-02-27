@@ -6,6 +6,8 @@ using backend.Models;
 using System.Globalization;
 using CsvHelper.Configuration;
 using System.Data;
+using CsvHelper.Configuration.Attributes;
+using Microsoft.OpenApi;
 class SeedVehicles
 {
     static async Task Main(string[] args)
@@ -21,6 +23,51 @@ class SeedVehicles
         
         using var db = new AppDbContext(options);
 
+    }
+
+    static async Task SeedObd(AppDbContext db, string path)
+    {
+        IEnumerable<string> lines = File.ReadLines(path);
+
+        if(lines.Count() == 0)
+        {
+            Console.WriteLine("No line read");
+            return;
+        }
+        
+        int count = 0;
+
+        foreach(var line in lines)
+        {
+            string trimmed = line.Trim();
+            if (string.IsNullOrWhiteSpace(trimmed))
+            {
+                Console.WriteLine("Line is empty");
+                return;
+            }
+
+            int dashIndex = line.IndexOf("-");
+            string code = line.Substring(0, dashIndex).Trim();
+            string description = line.Substring(dashIndex + 1).Trim();
+
+            db.Obds.Add(new Obd
+            {
+                PublicId = Guid.NewGuid(),
+                Code = code,
+                Make = null,
+                Description = description
+            });
+
+            count++;
+
+            if (count >= 10)
+            {
+                await db.SaveChangesAsync();
+                count = 0;
+                db.ChangeTracker.Clear();
+            }
+        }
+        await db.SaveChangesAsync();
     }
 
     static async Task SeedTSB(AppDbContext db, string path)
