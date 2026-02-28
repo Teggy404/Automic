@@ -28,12 +28,6 @@ class SeedVehicles
     static async Task SeedObd(AppDbContext db, string path)
     {
         IEnumerable<string> lines = File.ReadLines(path);
-
-        if(lines.Count() == 0)
-        {
-            Console.WriteLine("No line read");
-            return;
-        }
         
         int count = 0;
 
@@ -43,17 +37,25 @@ class SeedVehicles
             if (string.IsNullOrWhiteSpace(trimmed))
             {
                 Console.WriteLine("Line is empty");
-                return;
+                continue;
             }
 
-            int dashIndex = line.IndexOf("-");
-            string code = line.Substring(0, dashIndex).Trim();
-            string description = line.Substring(dashIndex + 1).Trim();
+            int dashIndex = trimmed.IndexOf('-');
+
+
+            if(dashIndex == -1)
+            {
+                Console.WriteLine("delimiter not found");
+                continue;
+            }
+
+            string code = trimmed.Substring(0, dashIndex).Trim();
+            string description = trimmed.Substring(dashIndex + 1).Trim();
 
             db.Obds.Add(new Obd
             {
                 PublicId = Guid.NewGuid(),
-                Code = code,
+                Code = code.ToUpper(),
                 Make = null,
                 Description = description
             });
