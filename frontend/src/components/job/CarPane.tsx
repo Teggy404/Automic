@@ -1,4 +1,5 @@
-import JobEntry from "./JobEntry";
+
+import JobEntryCarousel from "./JobEntry/JobEntry-Carousel";
 
 const CarPane = () => {
   return (   
@@ -6,7 +7,7 @@ const CarPane = () => {
       <div className="text-center mb-5">
         <span className="font-bold text-2xl text-shadow-lg">Honda CRV 2004</span>
       </div>
-      <JobEntry/>
+        <JobEntryCarousel/>
     </div>
 
    );

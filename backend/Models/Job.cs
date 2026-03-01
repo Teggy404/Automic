@@ -6,6 +6,7 @@ public class Job
 {
     public int Id { get; set; }
     public Guid PublicId { get; set; }
+    public required string JobTitle { get; set; }
     public int UserId { get; set; }
     public required User User { get; set;}
     public int CarId { get; set; }

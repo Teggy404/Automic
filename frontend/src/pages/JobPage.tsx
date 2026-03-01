@@ -2,7 +2,6 @@ import BackGroundIcons from "../components/home/BackGroundIcons";
 import ToolPane from "../components/job/ToolPane";
 import VideoPane from "../components/job/VideoPane";
 import CarPane from "../components/job/CarPane";
-import PromptInput from "../components/job/PromptInput";
 const JobPage = () => {
   return ( 
     <div className="flex-1 bg-secondary">

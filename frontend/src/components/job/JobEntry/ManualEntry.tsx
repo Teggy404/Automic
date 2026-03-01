@@ -1,17 +1,14 @@
 import { Bolt, Search, ArrowUp } from "lucide-react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Separator } from "../ui/separator";
+import { Button } from "../../ui/button";
+import { Input } from "../../ui/input";
+import { Separator } from "../../ui/separator";
 
-const JobEntry = () => {
-  return (
-    <div className="w-full h-full rounded-2xl border border-black/10 bg-black/10  shadow-lg p-6 flex flex-col items-center justify-center gap-5">
+const ManualEntry = () => {
+  return ( 
+  
+  <div className="w-full h-full rounded-2xl border border-black/10 bg-black/10 p-6 flex flex-col items-center justify-center gap-5">
 
       <div className="flex flex-col items-center gap-5">
-          <Bolt
-            className="opacity-70 glow-spin"
-            style={{ animationDuration: "1s", width: 44, height: 44 }}
-          />
         <span className="text-lg font-semibold text-black">
           Do you know what’s wrong with your car?
         </span>
@@ -45,8 +42,8 @@ const JobEntry = () => {
         Diagnose
         <Search className="ml-2 h-4 w-4" />
       </Button>
-    </div>
+    </div> 
   );
-};
-
-export default JobEntry;
+}
+ 
+export default ManualEntry;
