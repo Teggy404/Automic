@@ -16,14 +16,14 @@ const JobEntry = () => {
           Do you know what’s wrong with your car?
         </span>
         <span className="text-sm text-black/60 text-center max-w-sm">
-          If you know, describe the problem below. Otherwise, click 'diagnose' and we'll start narrowing it down.
+          If you know, enter a title for your job below. Otherwise, click 'diagnose' and we'll start narrowing it down.
         </span>
       </div>
 
       <div className="w-full max-w-md flex gap-2">
         <Input
           className="h-11 bg-white/90 text-black placeholder:text-black/50 border border-black/10 focus-visible:ring-2 focus-visible:ring-white/30"
-          placeholder="e.g. ‘radiator leaking’"
+          placeholder="e.g. ‘radiator replacement’"
         />
         <Button className="h-11 px-4 hover:cursor-pointer">
           <ArrowUp className="h-4 w-4" />
