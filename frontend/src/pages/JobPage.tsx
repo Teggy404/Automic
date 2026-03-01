@@ -14,7 +14,6 @@ const JobPage = () => {
         </div>
         <div className="w-full my-10 mx-5 flex flex-col justify-between">
           <CarPane/>
-          <PromptInput/>
         </div>
         <div className="w-[40%] m-10 ml-5">
           <VideoPane/>

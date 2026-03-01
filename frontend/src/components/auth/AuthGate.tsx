@@ -8,7 +8,7 @@ const AuthGate = () => {
 
   if (status === "loading") return <div>Loading...</div>;
   // if (status === "authed") return <Navigate to="/dashboard" replace />;
-  return <HomePage />;
+  return <JobPage />;
 };
 
 export default AuthGate;
