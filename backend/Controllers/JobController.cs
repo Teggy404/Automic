@@ -1,13 +1,13 @@
 using backend.Services;
+using backend.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
 
 [ApiController]
-[Route("job")]
+[Route("Job")]
 public class JobController : ControllerBase
 {
-
     public JobService _jobService;
 
     public JobController(JobService jobService)
@@ -16,10 +16,10 @@ public class JobController : ControllerBase
     }
 
     [HttpGet("diagnose")]
-    public async Task<ActionResult<List<string>>> GetDiagnosis(CancellationToken ct)
+    public async Task<ActionResult<string>> GetJobList([FromBody] JobRequest.DiagnoseRequest req, CancellationToken ct)
     {
-        var results = await _jobService.GetDiagnosticStrings(ct);
-        return Ok(results);
-    }
 
+        string testString = await _jobService.GenerateJobs(req);
+        return testString;
+    }
 }
