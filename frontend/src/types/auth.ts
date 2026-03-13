@@ -10,6 +10,7 @@ export type AuthState = {
   status: AuthStatus;
   bootstrapped: boolean;
   bootstrap: () => Promise<void>;
+  refresh: () => Promise<void>;
 };
 
 export type AuthResponse = {
