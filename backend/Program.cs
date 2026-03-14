@@ -20,6 +20,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddSingleton<PasswordService>();
 
+builder.Services.AddScoped<JobService>();
+
 builder.Services.AddScoped<TokenService>();
 
 builder.Services.AddScoped<VehicleDataService>();

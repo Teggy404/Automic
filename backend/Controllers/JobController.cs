@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace backend.Controllers;
 
 [ApiController]
-[Route("Job")]
+[Route("job")]
 public class JobController : ControllerBase
 {
     public JobService _jobService;
