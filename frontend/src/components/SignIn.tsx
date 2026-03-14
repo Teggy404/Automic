@@ -1,18 +1,43 @@
+import { useState } from "react";
 import { Button } from "./ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
 import { Field, FieldGroup } from "./ui/field";
 import { Input } from "./ui/input";
+import { login } from "../api/auth";
+import type { LoginRequest } from "../types/auth";
+import { toast } from "sonner";
+import { useAuthStore } from "../stores/authStore";
 
 const SignIn = () => {
+
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const {refresh} = useAuthStore();
+
+  const submitLogin = async (e: React.FormEvent<HTMLFormElement>) =>{
+    e.preventDefault();
+
+    if(email && password){
+      try{
+        await login({
+          Email: email,
+          Password: password,
+        } as LoginRequest)
+        await refresh();
+      } catch(e:any){
+        console.log(e);
+        toast("Failed To Login");
+      }
+    }
+  }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -35,7 +60,7 @@ const SignIn = () => {
             </DialogDescription>
           </DialogHeader>
 
-          <form className="mt-6 grid gap-4">
+          <form className="mt-6 grid gap-4" onSubmit={submitLogin}>
             <FieldGroup>
               <Field className="grid gap-2">
                 <label htmlFor="email" className="text-sm font-semibold">
@@ -48,6 +73,7 @@ const SignIn = () => {
                   type="email"
                   placeholder="you@example.com"
                   className="h-11"
+                  onChange={(e) => {setEmail(e.target.value)}}
                 />
               </Field>
 
@@ -63,6 +89,7 @@ const SignIn = () => {
                     type="password"
                     placeholder="••••••••"
                     className="h-11 pr-16"
+                    onChange={(e)=>{setPassword(e.target.value)}}
                   />
                   <button
                     type="button"
@@ -74,7 +101,7 @@ const SignIn = () => {
               </Field>
             </FieldGroup>
 
-            <Button className="h-11 w-full font-bold hover:cursor-pointer">
+            <Button className="h-11 w-full font-bold hover:cursor-pointer" type="submit">
               Sign In
             </Button>
           </form>
