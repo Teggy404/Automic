@@ -1,6 +1,8 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using backend.Data;
 using backend.Dtos;
+using backend.Models;
 using Google.GenAI;
 using Google.GenAI.Types;
 using Microsoft.EntityFrameworkCore;
@@ -15,27 +17,50 @@ public class JobService
     {
         _db = db;
     }
-    public async Task<string> GetJobNames(JobRequest.DiagnoseRequest req)
+    public async Task<List<string>> GetJobNames(JobRequest.DiagnoseRequest req)
     {
         JobRequest.ExpandKeywordResponse ExpandedDescription = await ExpandKeywords(req.ObdCode, req.Description);
 
         //Check and validate car
         bool parsed = Guid.TryParse(req.VehicleId, out Guid publicId);
         if (!parsed) throw new InvalidOperationException("Invalid vehicle Id");
-        bool exists = await _db.Cars.AnyAsync(c => c.PublicId == publicId);
-        if (!exists) throw new InvalidOperationException("Vehicle does not exist");
+        var vehicle = await _db.Cars.FirstOrDefaultAsync(c => c.PublicId == publicId);
+        if (vehicle is null) throw new InvalidOperationException("Vehicle does not exist");
 
         //search tsbs by car filter by components and order by matching key words
 
+        List<string> tsbsByComponent = await _db.Tsbs
+            .Where(t => t.CarId == vehicle.Id && ExpandedDescription.ComponentHints.Any(c => t.Component.Contains(c)))
+            .Select(t => t.Summary)
+            .ToListAsync();
 
+        
+        var orderedTsbs = tsbsByComponent
+            .Select(t => new
+            {
+                tsb = t,
+                score = ExpandedDescription.Keywords.Count(k => t.ToLower().Contains(k.ToLower()))
+            })
+            .OrderByDescending(r => r.score)
+            .Take(10);
+
+        string vehicleString = $"{vehicle.Make} {vehicle.Model} {vehicle.Year}";
 
         //call get jobs
 
+        JobRequest.GenerateJobsResponse JobList = await GenerateJobs(
+            Tsbs: orderedTsbs.Select(t=>t.tsb).ToList(),
+            ObdCode: req.ObdCode,
+            ObdDescription: null, 
+            VehicleString: vehicleString,
+            Description: req.Description
+        );
+
         //return jobs
-        return JsonSerializer.Serialize(ExpandedDescription);
+        return JobList.JobList;
     }
 
-    public async Task<JobRequest.GenerateJobsResponse> GenerateJobs(List<string> Tsbs, string ObdCode, string ObdDescription, string Description, string vehicleString)
+    public async Task<JobRequest.GenerateJobsResponse> GenerateJobs(List<string> Tsbs, string? ObdCode, string? ObdDescription, string Description, string VehicleString)
     {
         var client = new Client();
 
@@ -49,35 +74,31 @@ public class JobService
                         Text = """
                             You are a grounded automotive job recommendation generator.
 
-                            Your job is to read the user's symptom description, optional OBD information, and retrieved TSB evidence, then produce a structured list of possible service jobs.
+                            Your job is to read the user's symptom description, optional OBD information, and retrieved TSB summaries, then generate a short list of possible service job names.
 
-                            You must stay grounded in the provided evidence.
-                            You must not invent repairs that are not reasonably supported by the provided TSBs or OBD information.
+                            You must stay grounded in the provided information.
+                            Do not invent repairs that are not reasonably supported by the symptom description, OBD information, or TSB summaries.
 
                             Rules:
-                            1. Every recommended job must reference at least one provided TSB id in evidence_tsb_ids, unless the job is supported only by the provided OBD information.
+                            1. Output only possible job names, not explanations.
                             2. Do not claim certainty. These are possible jobs, not confirmed repairs.
-                            3. Prefer practical service-style job names that would be useful for downstream YouTube and parts searches.
-                            4. Keep job titles concise and clear.
-                            5. Generate youtube_query and parts_query for each job.
-                            6. If multiple TSBs point to the same kind of repair, consolidate them into one reasonable job recommendation.
-                            7. Do not output duplicate jobs.
-                            8. Do not include markdown, code fences, commentary, or extra explanation.
-                            9. Output only valid JSON matching the required schema.
-                            10. If the evidence is weak or ambiguous, return broader job recommendations and lower confidence.
-                            11. If there is not enough evidence for a specific repair, prefer diagnostic/inspection-style jobs over replacement-style jobs.
+                            3. Prefer practical service-style job names that would be useful for downstream search.
+                            4. Keep job titles concise, clear, and specific enough to be useful.
+                            5. Do not output duplicate jobs.
+                            6. If the evidence is weak or ambiguous, prefer broader diagnostic or inspection-style jobs over replacement-style jobs.
+                            7. Do not include markdown, code fences, commentary, numbering, or extra text.
+                            8. Output only valid JSON matching the required schema.
 
                             Guidance:
-                            - Good job titles are practical, search-friendly, and not overly verbose.
-                            - Examples of acceptable job title styles:
-                            - Inspect shift solenoids
-                            - Diagnose power window motor circuit
-                            - Inspect ignition coil and spark plug
+                            - Good job title style examples:
+                            - Inspect ignition coil and spark plugs
+                            - Diagnose brake noise source
+                            - Inspect wheel bearing
                             - Check transmission fluid condition
-                            - Diagnose brake vibration source
+                            - Diagnose power window circuit
 
-                            Do not treat TSBs as guaranteed proof of the exact repair for this vehicle.
-                            Use them as supporting evidence for plausible job recommendations.
+                            Use the TSB summaries as supporting evidence for plausible jobs.
+                            Do not treat the TSBs as guaranteed proof of the exact repair.
                         """
                     }
                 ]
@@ -99,7 +120,7 @@ public class JobService
 
         string contentString = $"""
             Symptom Description: {Description}
-            Vehicle: {vehicleString}
+            Vehicle: {VehicleString}
             OBD Code: {ObdCode}
             OBD Description: {ObdDescription}
             Tsbs: {string.Join(System.Environment.NewLine + "  ", Tsbs)}
@@ -119,7 +140,7 @@ public class JobService
         return deserialized;
     }
 
-    public async Task<JobRequest.ExpandKeywordResponse> ExpandKeywords(string ObdCode, string Description)
+    public async Task<JobRequest.ExpandKeywordResponse> ExpandKeywords(string? ObdCode, string Description)
     {
         var client = new Client();
 

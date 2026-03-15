@@ -16,7 +16,7 @@ public class JobController : ControllerBase
     }
 
     [HttpGet("diagnose")]
-    public async Task<ActionResult<string>> GetJobList([FromBody] JobRequest.DiagnoseRequest req, CancellationToken ct)
+    public async Task<ActionResult<List<string>>> GetJobList([FromBody] JobRequest.DiagnoseRequest req, CancellationToken ct)
     {
 
         string testString = await _jobService.GenerateJobs(req);
