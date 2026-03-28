@@ -1,6 +1,7 @@
 using backend.Services;
 using backend.Dtos;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace backend.Controllers;
 
@@ -15,11 +16,12 @@ public class JobController : ControllerBase
         _jobService = jobService;
     }
 
+    [Authorize]
     [HttpGet("diagnose")]
-    public async Task<ActionResult<List<string>>> GetJobList([FromBody] JobRequest.DiagnoseRequest req, CancellationToken ct)
+    public async Task<ActionResult<List<string>>> GetJobList(JobRequest.DiagnoseRequest req, CancellationToken ct)
     {
 
-        string testString = await _jobService.GenerateJobs(req);
-        return testString;
+        List<string> testString = await _jobService.GetJobNames(req);
+        return Ok(testString);
     }
 }

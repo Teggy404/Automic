@@ -22,7 +22,7 @@ public class JobService
         JobRequest.ExpandKeywordResponse ExpandedDescription = await ExpandKeywords(req.ObdCode, req.Description);
 
         //Check and validate car
-        bool parsed = Guid.TryParse(req.VehicleId, out Guid publicId);
+        bool parsed = Guid.TryParse(req.VehiclePublicId, out Guid publicId);
         if (!parsed) throw new InvalidOperationException("Invalid vehicle Id");
         var vehicle = await _db.Cars.FirstOrDefaultAsync(c => c.PublicId == publicId);
         if (vehicle is null) throw new InvalidOperationException("Vehicle does not exist");
@@ -48,7 +48,7 @@ public class JobService
 
         //call get jobs
 
-        JobRequest.GenerateJobsResponse JobList = await GenerateJobs(
+        JobRequest.GenerateJobsResponse generateJobsResponse = await GenerateJobs(
             Tsbs: orderedTsbs.Select(t=>t.tsb).ToList(),
             ObdCode: req.ObdCode,
             ObdDescription: null, 
@@ -57,7 +57,7 @@ public class JobService
         );
 
         //return jobs
-        return JobList.JobList;
+        return generateJobsResponse.JobNames;
     }
 
     public async Task<JobRequest.GenerateJobsResponse> GenerateJobs(List<string> Tsbs, string? ObdCode, string? ObdDescription, string Description, string VehicleString)
