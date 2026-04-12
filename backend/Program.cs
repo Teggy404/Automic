@@ -18,6 +18,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+builder.Services.AddProblemDetails();
+
 builder.Services.AddSingleton<PasswordService>();
 
 builder.Services.AddScoped<JobService>();

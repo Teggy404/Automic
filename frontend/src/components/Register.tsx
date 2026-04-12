@@ -11,8 +11,11 @@ import { FieldGroup, Field } from "./ui/field";
 import { Input } from "./ui/input";
 import { useState } from "react";
 import { register } from "../api/auth";
+import { ApiError } from "../api/client";
+import { toast } from "sonner";
 
 const Register = () => {
+  const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -25,20 +28,27 @@ const Register = () => {
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    if (!canRegister) return;
-    const message = await register({
-      Email: email,
-      Password: password,
-    });
-
-    console.log(message);
+    try {    
+      if (!canRegister) return;
+      const message = await register({
+        Email: email,
+        Password: password,
+      });
+      setOpen(false);
+      toast("Account Created Succesfully")
+      console.log(message);
+    } catch(e){
+      if(e instanceof ApiError){
+        console.log(e.status, e.data);
+      } else console.log(e);
+      toast("Account Creation Failed")
+    }
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="hover:cursor-pointer">
+        <Button className="hover:cursor-pointer" onClick={() => setOpen(true)}>
           <span className="font-bold">Register</span>
         </Button>
       </DialogTrigger>

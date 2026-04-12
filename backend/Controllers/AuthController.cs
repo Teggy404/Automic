@@ -32,10 +32,10 @@ public class AuthController : ControllerBase
         var sub = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         if (string.IsNullOrWhiteSpace(sub))
-            return Unauthorized("Missing user id claim");
+            return Unauthorized(new ProblemDetails {Title ="Missing user id claim"});
 
         if (!Guid.TryParse(sub, out var publicId))
-            return Unauthorized("Invalid sub claim");
+            return Unauthorized(new ProblemDetails {Title ="Invalid sub claim"});
 
         var AuthUser = await _db.Users
             .Where(u => u.PublicId == publicId)
@@ -43,7 +43,7 @@ public class AuthController : ControllerBase
             .SingleOrDefaultAsync();
 
         if (AuthUser is null)
-            return Unauthorized("User no longer exists");
+            return Unauthorized(new ProblemDetails {Title = "User no longer exists"});
 
         return Ok(AuthUser);
 
@@ -54,9 +54,13 @@ public class AuthController : ControllerBase
     {
         var email = req.Email.Trim().ToLower();
 
+        //Check if User already exists
         var exists = await _db.Users.AnyAsync(u => u.Email == email);
-        if (exists) return BadRequest("Email is already registered");
+        if (exists) return BadRequest(new ProblemDetails {
+            Title = "Email is already registered",
+        });
 
+        //Add new user to DB
         var user = new User
         {
             PublicId = Guid.NewGuid(),
@@ -89,10 +93,10 @@ public class AuthController : ControllerBase
         var email = req.Email.Trim().ToLower();
 
         var user = await _db.Users.SingleOrDefaultAsync(u => u.Email == email);
-        if (user is null) return Unauthorized("Invalid credentials");
+        if (user is null) return Unauthorized(new ProblemDetails {Title = "Invalid credentials"});
 
         var ok = _passwords.Verify(user.PasswordHash, req.Password);
-        if (!ok) return Unauthorized("Invalid Credentials");
+        if (!ok) return Unauthorized(new ProblemDetails {Title = "Invalid Credentials"});
 
         var token = _tokens.CreateToken(user);
 

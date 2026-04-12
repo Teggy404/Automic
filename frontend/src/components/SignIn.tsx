@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { useAuthStore } from "../stores/authStore";
 
 const SignIn = () => {
-
+  const [open, setOpen] = useState(false);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const {refresh} = useAuthStore();
@@ -31,6 +31,7 @@ const SignIn = () => {
           Password: password,
         } as LoginRequest)
         await refresh();
+        setOpen(false);
       } catch(e:any){
         console.log(e);
         toast("Failed To Login");
@@ -39,9 +40,10 @@ const SignIn = () => {
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
+          onClick={() => setOpen(true)}
           variant="secondary"
           className="border border-black hover:cursor-pointer"
         >
